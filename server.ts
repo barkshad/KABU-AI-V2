@@ -97,7 +97,7 @@ ${context}`;
       const { GoogleGenAI } = await import("@google/genai");
       const _ai = new GoogleGenAI({ apiKey: geminiApiKey });
       const response = await _ai.models.generateContent({
-         model: 'gemini-3.1-pro-preview',
+         model: 'gemini-2.5-flash',
          contents: prompt
       });
       
@@ -245,7 +245,7 @@ ${context}`;
          }
       } else {
          try {
-            const aiModel = 'gemini-3.1-pro-preview';
+            const aiModel = 'gemini-2.5-flash'; // more robust model
 
             const responseStream = await _ai.models.generateContentStream({
               model: aiModel,
@@ -266,7 +266,7 @@ ${context}`;
             }
          } catch (genErr: any) {
             console.error("Gemini Generation Error:", genErr);
-            res.write("An error occurred while generating the response. Please try again later.");
+            res.write(`\n\n[Model Error]: ${genErr.message}\n`);
          }
       }
       res.end();
@@ -317,7 +317,7 @@ EXAMPLE:
       const _ai = new GoogleGenAI({ apiKey: geminiApiKey });
 
       const response = await _ai.models.generateContent({
-         model: 'gemini-3.1-pro-preview',
+         model: 'gemini-2.5-flash',
          contents: prompt
       });
       const text = response.text || "";

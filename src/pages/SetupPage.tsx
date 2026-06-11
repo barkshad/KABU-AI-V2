@@ -31,28 +31,32 @@ export default function SetupPage() {
 
     try {
       // Basic validations
-      if (!supabaseUrl.startsWith("https://") || !supabaseUrl.endsWith(".supabase.co")) {
+      let finalSupabaseUrl = supabaseUrl.trim() || "https://placeholder.supabase.co";
+      let finalSupabaseKey = supabaseKey.trim() || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
+
+      if (finalSupabaseUrl !== "https://placeholder.supabase.co" && (!finalSupabaseUrl.startsWith("https://") || !finalSupabaseUrl.endsWith(".supabase.co"))) {
         throw new Error("Invalid Supabase URL format. Must start with https:// and end with .supabase.co");
       }
-      if (!supabaseKey.startsWith("eyJ")) {
+      if (finalSupabaseKey !== "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9" && !finalSupabaseKey.startsWith("eyJ")) {
         throw new Error("Invalid Supabase Anon Key. It usually starts with eyJ.");
       }
       if (!geminiKey) {
         throw new Error("Gemini API Key is required.");
       }
-      if (!kimiKey) {
-        throw new Error("Kimi API Key is required.");
-      }
 
       // Save to localStorage so frontend logic works
-      localStorage.setItem('SETUP_SUPABASE_URL', supabaseUrl);
-      localStorage.setItem('SETUP_SUPABASE_ANON_KEY', supabaseKey);
+      localStorage.setItem('SETUP_SUPABASE_URL', finalSupabaseUrl);
+      localStorage.setItem('SETUP_SUPABASE_ANON_KEY', finalSupabaseKey);
       localStorage.setItem('SETUP_GEMINI_API_KEY', geminiKey);
-      localStorage.setItem('SETUP_KIMI_API_KEY', kimiKey);
+      if (kimiKey) {
+         localStorage.setItem('SETUP_KIMI_API_KEY', kimiKey);
+      } else {
+         localStorage.removeItem('SETUP_KIMI_API_KEY');
+      }
       localStorage.setItem('SETUP_APP_URL', appUrl);
 
       // Dynamically reinitialize Supabase for the frontend!
-      reinitializeSupabase(supabaseUrl, supabaseKey);
+      reinitializeSupabase(finalSupabaseUrl, finalSupabaseKey);
 
       // Send Gemini Key and Kimi Key to the backend
       const res = await fetch("/api/setup", {
@@ -95,23 +99,23 @@ export default function SetupPage() {
               <Database size={16} /> Supabase Configuration
             </h2>
             <div>
-              <label className="text-xs font-medium text-gray-500 mb-2 block">Supabase Project URL (e.g. https://xxx.supabase.co)</label>
+              <label className="text-xs font-medium text-gray-500 mb-2 block">Supabase Project URL (e.g. https://xxx.supabase.co) [Optional]</label>
               <input
                 type="text"
                 value={supabaseUrl}
                 onChange={(e) => setSupabaseUrl(e.target.value)}
                 className="w-full bg-[#1A1A1A] border border-[#333] text-white px-4 py-3 rounded-xl focus:outline-none focus:border-white transition-all text-sm"
-                required
+                placeholder="Leave blank for mock database"
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500 mb-2 block">Supabase Anon Key</label>
+              <label className="text-xs font-medium text-gray-500 mb-2 block">Supabase Anon Key [Optional]</label>
               <input
                 type="password"
                 value={supabaseKey}
                 onChange={(e) => setSupabaseKey(e.target.value)}
                 className="w-full bg-[#1A1A1A] border border-[#333] text-white px-4 py-3 rounded-xl focus:outline-none focus:border-white transition-all text-sm"
-                required
+                placeholder="Leave blank for mock database"
               />
             </div>
           </div>
@@ -133,13 +137,12 @@ export default function SetupPage() {
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500 mb-2 block">Kimi AI API Key</label>
+              <label className="text-xs font-medium text-gray-500 mb-2 block">Kimi AI API Key (Optional)</label>
               <input
                 type="password"
                 value={kimiKey}
                 onChange={(e) => setKimiKey(e.target.value)}
                 className="w-full bg-[#1A1A1A] border border-[#333] text-white px-4 py-3 rounded-xl focus:outline-none focus:border-white transition-all text-sm"
-                required
               />
             </div>
           </div>
