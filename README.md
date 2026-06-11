@@ -1,20 +1,3 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
-
-# Run and deploy your AI Studio app
-
-This contains everything you need to run your app locally.
-
-View your app in AI Studio: https://ai.studio/apps/f471b2cc-65fc-4551-b06b-4f9933603eaf
-
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+kabu ai V2: date6/11/2026
+kabu ai uses a rag system to evaluate data.
+this is kabu ai's concept...it uses a rag system which checks the schools database first hand instead of evaluating raw data from the internet,,,kabu ai's intent is to empact the student with an approved tool in a world full of many misleading ai tools
