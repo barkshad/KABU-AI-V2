@@ -23,6 +23,10 @@ export default function AnalyzePage() {
     try {
       const response = await fetch("/api/documents/upload", {
         method: "POST",
+        headers: {
+           "x-gemini-api-key": localStorage.getItem("SETUP_GEMINI_API_KEY") || "",
+           "x-kimi-api-key": localStorage.getItem("SETUP_KIMI_API_KEY") || ""
+        },
         body: formData
       });
 
@@ -50,7 +54,11 @@ export default function AnalyzePage() {
       try {
          const res = await fetch("/api/documents/summarize", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+               "Content-Type": "application/json",
+               "x-gemini-api-key": localStorage.getItem("SETUP_GEMINI_API_KEY") || "",
+               "x-kimi-api-key": localStorage.getItem("SETUP_KIMI_API_KEY") || ""
+            },
             body: JSON.stringify({ documentId: docId, eli5 })
          });
          const data = await res.json();

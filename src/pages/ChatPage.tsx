@@ -66,7 +66,14 @@ export default function ChatPage({ user }: { user: any }) {
         const formData = new FormData();
         formData.append("file", fileToAttach);
         try {
-            const upRes = await fetch("/api/documents/upload", { method: "POST", body: formData });
+            const upRes = await fetch("/api/documents/upload", { 
+               method: "POST", 
+               headers: {
+                  "x-gemini-api-key": localStorage.getItem("SETUP_GEMINI_API_KEY") || "",
+                  "x-kimi-api-key": localStorage.getItem("SETUP_KIMI_API_KEY") || ""
+               },
+               body: formData 
+            });
             if (upRes.ok) {
                 const data = await upRes.json();
                 documentId = data.documentId;
@@ -85,7 +92,11 @@ export default function ChatPage({ user }: { user: any }) {
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+           "Content-Type": "application/json",
+           "x-gemini-api-key": localStorage.getItem("SETUP_GEMINI_API_KEY") || "",
+           "x-kimi-api-key": localStorage.getItem("SETUP_KIMI_API_KEY") || ""
+        },
         body: JSON.stringify({ 
           message: queryText,
           documentId,

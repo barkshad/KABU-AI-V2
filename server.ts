@@ -89,7 +89,7 @@ ${context}`
 Context:
 ${context}`;
 
-      const geminiApiKey = dynamicGeminiKey || process.env.GEMINI_API_KEY;
+      const geminiApiKey = (req.headers['x-gemini-api-key'] as string) || dynamicGeminiKey || process.env.GEMINI_API_KEY;
       if (!geminiApiKey) {
          return res.json({ summary: "GEMINI_API_KEY is missing. Please configure your environment variables." });
       }
@@ -119,11 +119,9 @@ ${context}`;
       
       let allowInternet = true;
       
-      const geminiApiKey = dynamicGeminiKey || process.env.GEMINI_API_KEY;
+      const geminiApiKey = (req.headers['x-gemini-api-key'] as string) || dynamicGeminiKey || process.env.GEMINI_API_KEY;
       if (!geminiApiKey) {
          if (!res.headersSent) {
-            return res.status(500).json({ error: "Missing GEMINI_API_KEY environment variable. Chat is unavailable." });
-         } else {
             res.write("data: Error: Missing GEMINI_API_KEY environment variable.\n\n");
             res.end();
             return;
@@ -132,7 +130,7 @@ ${context}`;
 
       const { GoogleGenAI } = await import("@google/genai");
       const _ai = new GoogleGenAI({ apiKey: geminiApiKey });
-      const kimiApiKey = dynamicKimiKey || process.env.KIMI_API_KEY;
+      const kimiApiKey = (req.headers['x-kimi-api-key'] as string) || dynamicKimiKey || process.env.KIMI_API_KEY;
 
       if (message) {
         // Step 1: Retrieval Setup if requested mode is RAG or HYBRID
@@ -308,9 +306,9 @@ EXAMPLE:
 ]
 `;
 
-      const geminiApiKey = dynamicGeminiKey || process.env.GEMINI_API_KEY;
+      const geminiApiKey = (req.headers['x-gemini-api-key'] as string) || dynamicGeminiKey || process.env.GEMINI_API_KEY;
       if (!geminiApiKey) {
-         return res.status(500).json({ error: "Missing GEMINI_API_KEY environment variable. Flashcards generation is unavailable." });
+         return res.status(500).json({ error: "Missing GEMINI_API_KEY" });
       }
 
       const { GoogleGenAI } = await import("@google/genai");

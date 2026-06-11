@@ -26,6 +26,10 @@ function AdminResourceUpload({ onUploadComplete }: { onUploadComplete?: (fileNam
       
       const response = await fetch("/api/documents/upload", {
         method: "POST",
+        headers: {
+           "x-gemini-api-key": localStorage.getItem("SETUP_GEMINI_API_KEY") || "",
+           "x-kimi-api-key": localStorage.getItem("SETUP_KIMI_API_KEY") || ""
+        },
         body: formData
       });
 
@@ -152,7 +156,11 @@ export default function AdminDashboard() {
     // 2. Broadcast to backend memory
     await fetch("/api/documents/status", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+         "Content-Type": "application/json",
+         "x-gemini-api-key": localStorage.getItem("SETUP_GEMINI_API_KEY") || "",
+         "x-kimi-api-key": localStorage.getItem("SETUP_KIMI_API_KEY") || ""
+      },
       body: JSON.stringify({ documentId: docObj.documentId, status: newStatus })
     }).catch(console.error);
   };
@@ -193,7 +201,11 @@ export default function AdminDashboard() {
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+           "Content-Type": "application/json",
+           "x-gemini-api-key": localStorage.getItem("SETUP_GEMINI_API_KEY") || "",
+           "x-kimi-api-key": localStorage.getItem("SETUP_KIMI_API_KEY") || ""
+        },
         body: JSON.stringify({ message: testQuery }) // using the current main chat API for the test
       });
       if (response.body) {
