@@ -19,7 +19,7 @@ async function startServer() {
 
   // Transient/Environment Configuration overrides
   let dynamicGeminiKey = "";
-  let activeModel = process.env.AI_MODEL || "gemini-2.5-flash";
+  let activeModel = process.env.AI_MODEL || "gemini-3.5-flash";
 
   // Pre-seed some mock CMS data in-memory if needed (will serialize to client-side database too)
   let cmsSettings = {

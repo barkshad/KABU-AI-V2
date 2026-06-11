@@ -44,7 +44,7 @@ export class GeminiService {
    * Gets the configurable active model from environment variables or custom CMS settings
    */
   public getModelName(): string {
-    return process.env.AI_MODEL || "gemini-2.5-flash";
+    return process.env.AI_MODEL || "gemini-3.5-flash";
   }
 
   /**

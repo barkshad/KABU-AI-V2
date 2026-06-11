@@ -227,7 +227,7 @@ export default function AdminDashboard() {
 
   // AI Connection Handshake States
   const [testingHandshake, setTestingHandshake] = useState(false);
-  const [handshakeModel, setHandshakeModel] = useState("gemini-2.5-flash");
+  const [handshakeModel, setHandshakeModel] = useState("gemini-3.5-flash");
   const [handshakeLogs, setHandshakeLogs] = useState<string[]>([]);
 
   // Load Initial Data
@@ -256,7 +256,7 @@ export default function AdminDashboard() {
         }
         if (data) setSettings((prev) => ({ ...prev, ...data }));
         if (data?.primaryColor) {
-           setHandshakeModel(localStorage.getItem("DbarModel") || "gemini-2.5-flash");
+           setHandshakeModel(localStorage.getItem("DbarModel") || "gemini-3.5-flash");
         }
       } catch (e) {
          console.warn("Global settings fetch error; using presets.", e);
@@ -1537,8 +1537,7 @@ export default function AdminDashboard() {
                     onChange={(e) => setHandshakeModel(e.target.value)}
                     className="w-full bg-[#1A1A1A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white focus:outline-none"
                   >
-                    <option value="gemini-2.5-flash">gemini-2.5-flash (Standard & Rapid)</option>
-                    <option value="gemini-3.5-flash">gemini-3.5-flash (Latest Model)</option>
+                    <option value="gemini-3.5-flash">gemini-3.5-flash (Standard & Rapid)</option>
                     <option value="gemini-3.1-pro-preview">gemini-3.1-pro-preview (Intense reasoning)</option>
                   </select>
                 </div>

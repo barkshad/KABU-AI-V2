@@ -8,7 +8,7 @@ const google = createGoogleGenerativeAI({
 async function run() {
   try {
     const result = streamText({
-      model: google('gemini-2.5-flash'),
+      model: google('gemini-3.5-flash'),
       prompt: "Hello"
     });
     console.log("Result type:", typeof result, result);
