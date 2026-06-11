@@ -9,7 +9,6 @@ export default function SetupPage() {
   const [supabaseUrl, setSupabaseUrl] = useState("");
   const [supabaseKey, setSupabaseKey] = useState("");
   const [geminiKey, setGeminiKey] = useState("");
-  const [kimiKey, setKimiKey] = useState("");
   const [appUrl, setAppUrl] = useState("");
 
   const [loading, setLoading] = useState(false);
@@ -20,7 +19,6 @@ export default function SetupPage() {
     setSupabaseUrl(localStorage.getItem('SETUP_SUPABASE_URL') || import.meta.env.VITE_SUPABASE_URL || "");
     setSupabaseKey(localStorage.getItem('SETUP_SUPABASE_ANON_KEY') || import.meta.env.VITE_SUPABASE_ANON_KEY || "");
     setGeminiKey(localStorage.getItem('SETUP_GEMINI_API_KEY') || "");
-    setKimiKey(localStorage.getItem('SETUP_KIMI_API_KEY') || "");
     setAppUrl(localStorage.getItem('SETUP_APP_URL') || window.location.origin);
   }, []);
 
@@ -48,21 +46,16 @@ export default function SetupPage() {
       localStorage.setItem('SETUP_SUPABASE_URL', finalSupabaseUrl);
       localStorage.setItem('SETUP_SUPABASE_ANON_KEY', finalSupabaseKey);
       localStorage.setItem('SETUP_GEMINI_API_KEY', geminiKey);
-      if (kimiKey) {
-         localStorage.setItem('SETUP_KIMI_API_KEY', kimiKey);
-      } else {
-         localStorage.removeItem('SETUP_KIMI_API_KEY');
-      }
       localStorage.setItem('SETUP_APP_URL', appUrl);
 
       // Dynamically reinitialize Supabase for the frontend!
       reinitializeSupabase(finalSupabaseUrl, finalSupabaseKey);
 
-      // Send Gemini Key and Kimi Key to the backend
+      // Send Gemini Key to the backend
       const res = await fetch("/api/setup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ geminiKey, kimiKey })
+        body: JSON.stringify({ geminiKey })
       });
       if (!res.ok) throw new Error("Failed to configure server. Please check connections.");
 
@@ -134,15 +127,6 @@ export default function SetupPage() {
                 onChange={(e) => setGeminiKey(e.target.value)}
                 className="w-full bg-[#1A1A1A] border border-[#333] text-white px-4 py-3 rounded-xl focus:outline-none focus:border-white transition-all text-sm"
                 required
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-gray-500 mb-2 block">Kimi AI API Key (Optional)</label>
-              <input
-                type="password"
-                value={kimiKey}
-                onChange={(e) => setKimiKey(e.target.value)}
-                className="w-full bg-[#1A1A1A] border border-[#333] text-white px-4 py-3 rounded-xl focus:outline-none focus:border-white transition-all text-sm"
               />
             </div>
           </div>

@@ -8,15 +8,12 @@ let chroma: ChromaClient | null = null;
 let isChromaAvailable = false;
 
 // Initialize Gemini AI
-let aiClient: GoogleGenAI | null = null;
-function getAI() {
-  if (!aiClient) {
-    if (!process.env.GEMINI_API_KEY) {
-      throw new Error("GEMINI_API_KEY is not defined in environment variables");
-    }
-    aiClient = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+function getAI(apiKey?: string) {
+  const activeKey = apiKey || process.env.GEMINI_API_KEY;
+  if (!activeKey) {
+    throw new Error("GEMINI_API_KEY is missing. Please configure it in your setup panel or environment variables.");
   }
-  return aiClient;
+  return new GoogleGenAI({ apiKey: activeKey });
 }
 
 export async function initChroma() {
@@ -81,8 +78,8 @@ export function chunkText(text: string, chunkSize = 1000, overlap = 200): string
   return chunks;
 }
 
-export async function generateEmbeddings(texts: string[]): Promise<number[][]> {
-  const ai = getAI();
+export async function generateEmbeddings(texts: string[], apiKey?: string): Promise<number[][]> {
+  const ai = getAI(apiKey);
   const embeddings: number[][] = [];
   
   // Note: For large documents in production, batch requests should be made 
@@ -108,11 +105,12 @@ export async function storeInChroma(
   collectionName: string,
   documentId: string,
   chunks: string[],
-  metadata: Record<string, any>
+  metadata: Record<string, any>,
+  apiKey?: string
 ) {
   documentStatuses[documentId] = metadata.status || "Draft";
   await initChroma();
-  const embeddings = await generateEmbeddings(chunks);
+  const embeddings = await generateEmbeddings(chunks, apiKey);
   const ids = chunks.map((_, i) => `${documentId}-chunk-${i}-${uuidv4().substring(0,6)}`);
   const metadatas = chunks.map((_, i) => ({
     ...metadata,
@@ -146,10 +144,10 @@ export async function storeInChroma(
   return { documentId, chunksCount: chunks.length };
 }
 
-export async function queryChroma(collectionName: string, queryText: string, nResults = 3, targetDocId: string | null = null) {
+export async function queryChroma(collectionName: string, queryText: string, nResults = 3, targetDocId: string | null = null, apiKey?: string) {
   await initChroma();
   
-  const ai = getAI();
+  const ai = getAI(apiKey);
   const response = await ai.models.embedContent({
       model: 'gemini-embedding-2-preview',
       contents: queryText,

@@ -8,14 +8,33 @@ function isMockUrl() {
   return false;
 }
 
-const mockDb: Record<string, any[]> = {};
+const getMockDb = (): Record<string, any[]> => {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = localStorage.getItem('MOCK_SUPABASE_DB');
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+};
+
+const saveMockDb = (db: Record<string, any[]>) => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('MOCK_SUPABASE_DB', JSON.stringify(db));
+  } catch (e) {
+    console.error("Failed to save mock DB", e);
+  }
+};
 
 export const dbService = {
   addDocument: async (collection: string, data: any) => {
     if (isMockUrl()) {
-        if (!mockDb[collection]) mockDb[collection] = [];
-        const newDoc = { ...data, id: data.id || Date.now().toString() };
-        mockDb[collection].push(newDoc);
+        const db = getMockDb();
+        if (!db[collection]) db[collection] = [];
+        const newDoc = { ...data, id: data.id || Date.now().toString(), created_at: new Date().toISOString() };
+        db[collection].push(newDoc);
+        saveMockDb(db);
         return newDoc;
     }
     const { data: result, error } = await supabase
@@ -30,8 +49,19 @@ export const dbService = {
 
   getDocuments: async (collection: string, orderByColumn?: string, ascending = false) => {
     if (isMockUrl()) {
-        if (!mockDb[collection]) return [];
-        return [...mockDb[collection]];
+        const db = getMockDb();
+        if (!db[collection]) return [];
+        let items = [...db[collection]];
+        if (orderByColumn) {
+          items.sort((a, b) => {
+            const valA = a[orderByColumn];
+            const valB = b[orderByColumn];
+            if (valA < valB) return ascending ? -1 : 1;
+            if (valA > valB) return ascending ? 1 : -1;
+            return 0;
+          });
+        }
+        return items;
     }
     let query = supabase.from(collection).select('*');
     if (orderByColumn) {
@@ -45,11 +75,13 @@ export const dbService = {
   
   updateDocument: async (collection: string, id: string, updates: any) => {
     if (isMockUrl()) {
-        if (!mockDb[collection]) throw new Error("Not found");
-        const idx = mockDb[collection].findIndex(d => d.id === id);
+        const db = getMockDb();
+        if (!db[collection]) throw new Error("Not found");
+        const idx = db[collection].findIndex(d => String(d.id) === String(id));
         if (idx === -1) throw new Error("Not found");
-        mockDb[collection][idx] = { ...mockDb[collection][idx], ...updates };
-        return mockDb[collection][idx];
+        db[collection][idx] = { ...db[collection][idx], ...updates, updated_at: new Date().toISOString() };
+        saveMockDb(db);
+        return db[collection][idx];
     }
     const { data, error } = await supabase
       .from(collection)
@@ -64,8 +96,10 @@ export const dbService = {
   
   deleteDocument: async (collection: string, id: string) => {
     if (isMockUrl()) {
-        if (!mockDb[collection]) return;
-        mockDb[collection] = mockDb[collection].filter(d => d.id !== id);
+        const db = getMockDb();
+        if (!db[collection]) return;
+        db[collection] = db[collection].filter(d => String(d.id) !== String(id));
+        saveMockDb(db);
         return;
     }
     const { error } = await supabase
@@ -78,8 +112,9 @@ export const dbService = {
   
   getDocument: async (collection: string, id: string) => {
     if (isMockUrl()) {
-        if (!mockDb[collection]) throw new Error("Not found");
-        const doc = mockDb[collection].find(d => d.id === id);
+        const db = getMockDb();
+        if (!db[collection]) throw new Error("Not found");
+        const doc = db[collection].find(d => String(d.id) === String(id));
         if (!doc) throw new Error("Not found");
         return doc;
     }

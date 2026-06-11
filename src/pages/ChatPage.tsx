@@ -69,8 +69,7 @@ export default function ChatPage({ user }: { user: any }) {
             const upRes = await fetch("/api/documents/upload", { 
                method: "POST", 
                headers: {
-                  "x-gemini-api-key": localStorage.getItem("SETUP_GEMINI_API_KEY") || "",
-                  "x-kimi-api-key": localStorage.getItem("SETUP_KIMI_API_KEY") || ""
+                  "x-gemini-api-key": localStorage.getItem("SETUP_GEMINI_API_KEY") || ""
                },
                body: formData 
             });
@@ -94,8 +93,7 @@ export default function ChatPage({ user }: { user: any }) {
         method: "POST",
         headers: { 
            "Content-Type": "application/json",
-           "x-gemini-api-key": localStorage.getItem("SETUP_GEMINI_API_KEY") || "",
-           "x-kimi-api-key": localStorage.getItem("SETUP_KIMI_API_KEY") || ""
+           "x-gemini-api-key": localStorage.getItem("SETUP_GEMINI_API_KEY") || ""
         },
         body: JSON.stringify({ 
           message: queryText,
@@ -190,7 +188,7 @@ export default function ChatPage({ user }: { user: any }) {
             <ul className="space-y-3">
               <li><strong className="text-gray-100">1. RAG Mode:</strong> Restricts the AI to only use answers from documents you or admins have uploaded. Great for precise academic sourcing.</li>
               <li><strong className="text-gray-100">2. Internet Mode:</strong> Allows the AI to browse the web for answers when you need general knowledge.</li>
-              <li><strong className="text-gray-100">3. Hybrid Mode:</strong> Combines verified academic documents with Google API & Kimi AI reasoning for comprehensive answers.</li>
+              <li><strong className="text-gray-100">3. Hybrid Mode:</strong> Combines verified academic documents with Google Gemini reasoning for comprehensive answers.</li>
               <li><strong className="text-gray-100">4. File Uploads:</strong> Click the paperclip icon below to upload PDFs or documents for immediate analysis.</li>
             </ul>
           </div>

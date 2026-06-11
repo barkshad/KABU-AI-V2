@@ -46,15 +46,14 @@ export default function App() {
   const [role, setRole] = useState<string>('student');
 
   useEffect(() => {
-    // Ping setup endpoint to initialize any stored Gemini/Kimi key on the backend
+    // Ping setup endpoint to initialize any stored Gemini key on the backend
     const storedGemini = localStorage.getItem('SETUP_GEMINI_API_KEY');
-    const storedKimi = localStorage.getItem('SETUP_KIMI_API_KEY');
 
-    if (storedGemini || storedKimi) {
+    if (storedGemini) {
       fetch('/api/setup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ geminiKey: storedGemini, kimiKey: storedKimi })
+        body: JSON.stringify({ geminiKey: storedGemini })
       }).catch(e => console.error("Could not sync api keys", e));
     }
 
